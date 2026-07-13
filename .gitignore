@@ -2,3 +2,7 @@
 *.log
 .idea/
 .vscode/
+.env
+.env.*
+# Optional: keep secrets local (anon key is public-safe; service_role must never be committed)
+# config.js

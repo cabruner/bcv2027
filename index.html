@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Bruner Carnivale Venice 2027</title>
-  <meta name="description" content="Bruner Carnivale Venice 2027 — save the date. Details coming soon." />
+  <meta name="description" content="Private guest site for Bruner Carnivale Venice 2027." />
+  <meta name="robots" content="noindex, nofollow" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet" />
@@ -13,47 +14,160 @@
 <body>
   <div class="bg-stripes" aria-hidden="true"></div>
 
-  <header class="site-header">
-    <p class="eyebrow">You’re invited</p>
-    <h1>Bruner Carnivale Venice</h1>
-    <p class="year">2027</p>
-  </header>
-
-  <main>
-    <section class="card hero">
-      <p class="lede">
-        A celebration years in the making. Save the date — full details will land here as plans firm up.
-      </p>
-      <dl class="details">
-        <div>
-          <dt>When</dt>
-          <dd>2027 <span class="muted">(exact dates TBD)</span></dd>
-        </div>
-        <div>
-          <dt>Where</dt>
-          <dd>Venice <span class="muted">(details TBD)</span></dd>
-        </div>
-        <div>
-          <dt>Who</dt>
-          <dd>Family &amp; friends</dd>
-        </div>
-      </dl>
-    </section>
-
-    <section class="card" id="rsvp">
-      <h2>Stay in the loop</h2>
+  <div id="setup-banner" class="setup-banner" hidden>
+    <div class="card">
+      <h1>Almost ready</h1>
       <p>
-        This site will grow with schedules, lodging, and how to RSVP.
-        For now, bookmark <strong>bcv2027.com</strong> and check back.
+        Supabase isn’t configured yet. Create a project, run
+        <code>supabase/schema.sql</code>, then put your project URL and
+        <strong>anon</strong> key in <code>config.js</code>.
       </p>
-      <p class="note">
-        Want to help plan? Reach out to the Bruners — we’d love your ideas for the carnivale.
-      </p>
-    </section>
-  </main>
+      <p class="note">See the README for step-by-step setup.</p>
+    </div>
+  </div>
 
-  <footer>
-    <p>Bruner Carnivale Venice 2027 · <a href="https://bcv2027.com">bcv2027.com</a></p>
-  </footer>
+  <!-- Login / whitelist gate -->
+  <section id="gate" class="gate" hidden>
+    <header class="site-header">
+      <p class="eyebrow">Private guest list</p>
+      <h1>Bruner Carnivale Venice</h1>
+      <p class="year">2027</p>
+    </header>
+
+    <div class="card gate-card">
+      <p id="gate-status" class="gate-status" hidden></p>
+
+      <div id="email-step">
+        <h2>May we see your invitation?</h2>
+        <p class="lede">
+          This carnivale is for the guest list only. Enter the email we have on file —
+          we’ll check the rope.
+        </p>
+        <form id="email-form" class="stack-form">
+          <label>
+            Email
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autocomplete="username"
+              required
+              placeholder="you@example.com"
+            />
+          </label>
+          <button type="submit" class="btn primary">Check the list</button>
+        </form>
+      </div>
+
+      <div id="password-step" hidden>
+        <h2>Welcome, reveler</h2>
+        <p class="lede">
+          <strong id="allowed-email-label"></strong> is on the list.
+          First visit? Create a password. Returning? Sign in.
+        </p>
+        <div class="mode-toggle" role="group" aria-label="Account mode">
+          <button type="button" id="mode-signup" class="mode-btn active" aria-pressed="true">
+            Create password
+          </button>
+          <button type="button" id="mode-signin" class="mode-btn" aria-pressed="false">
+            Sign in
+          </button>
+        </div>
+        <form id="password-form" class="stack-form">
+          <label>
+            Password
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autocomplete="new-password"
+              required
+              minlength="8"
+              placeholder="At least 8 characters"
+            />
+          </label>
+          <label id="password-confirm-row">
+            Confirm password
+            <input
+              id="password-confirm"
+              name="password-confirm"
+              type="password"
+              autocomplete="new-password"
+              minlength="8"
+              placeholder="Same again"
+            />
+          </label>
+          <button type="submit" id="password-submit" class="btn primary">
+            Create password &amp; enter
+          </button>
+        </form>
+        <p class="form-footer">
+          <a href="#" id="back-to-email">Use a different email</a>
+        </p>
+      </div>
+
+      <div id="denied-step" hidden>
+        <h2>Not on this list</h2>
+        <p class="lede">
+          Alas — the velvet rope stays put. If you believe that’s a clerical error
+          (gondolas collide, lists get wet), nudge a Bruner and we’ll sort it.
+        </p>
+        <p class="note">
+          Tip: use the same email the invitation was sent to.
+        </p>
+        <button type="button" id="try-another" class="btn">Try another email</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Authenticated private content -->
+  <div id="app" class="app" hidden>
+    <header class="app-bar">
+      <div>
+        <p class="eyebrow">Bruner Carnivale Venice 2027</p>
+        <p class="who">Signed in as <span id="user-email"></span></p>
+      </div>
+      <button type="button" id="sign-out" class="btn small">Sign out</button>
+    </header>
+
+    <main>
+      <section class="card hero">
+        <h1>You’re in.</h1>
+        <p class="lede">
+          Welcome to the private guest site. Details — dates, lodging, schedule, and
+          more — will land here as plans firm up.
+        </p>
+        <dl class="details">
+          <div>
+            <dt>When</dt>
+            <dd>2027 <span class="muted">(exact dates TBD)</span></dd>
+          </div>
+          <div>
+            <dt>Where</dt>
+            <dd>Venice <span class="muted">(details TBD)</span></dd>
+          </div>
+          <div>
+            <dt>Who</dt>
+            <dd>Family, friends &amp; fellow revelers</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="card">
+        <h2>Coming soon</h2>
+        <p>
+          We’ll fill this space with the itinerary, travel notes, and whatever else
+          the carnivale demands. Watch this space.
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      <p>Bruner Carnivale Venice 2027 · private guest site</p>
+    </footer>
+  </div>
+
+  <script src="config.js"></script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>
