@@ -1,6 +1,6 @@
-# Bruner Carnivale 2027
+# Bruner Carnivale Venice 2027
 
-Simple event website for **Bruner Carnivale 2027** — [bcv2027.com](https://bcv2027.com).
+Simple event website for **Bruner Carnivale Venice 2027** — [bcv2027.com](https://bcv2027.com).
 
 ## Stack
 
