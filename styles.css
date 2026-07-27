@@ -81,6 +81,20 @@ body {
   color: var(--stripe-c);
 }
 
+.save-the-date {
+  margin: 1rem auto 0;
+  display: inline-block;
+  padding: 0.5rem 1.1rem;
+  border: 1px solid rgba(196, 30, 58, 0.35);
+  border-radius: 999px;
+  background: rgba(233, 196, 106, 0.28);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--stripe-a);
+}
+
 .gate,
 .app,
 .setup-banner {
@@ -280,6 +294,64 @@ body {
 .hero .lede {
   margin: 0.75rem 0 1.5rem;
   font-size: 1.15rem;
+}
+
+.hero-figure {
+  margin: -1.75rem -1.5rem 1.5rem;
+  overflow: hidden;
+  border-radius: var(--radius) var(--radius) 0 0;
+  line-height: 0;
+}
+
+.hero-figure img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.stamp {
+  margin: 0 0 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  color: var(--stripe-a);
+}
+
+.carnevale {
+  position: relative;
+}
+
+.mask-art {
+  display: block;
+  width: min(220px, 60%);
+  height: auto;
+  margin: 0 auto 1.25rem;
+}
+
+.flourishes {
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.flourishes li {
+  padding-left: 1.4rem;
+  position: relative;
+}
+
+.flourishes li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--gold);
+  border: 1px solid rgba(138, 90, 28, 0.5);
 }
 
 .details {

@@ -6,3 +6,7 @@
 .env.*
 # Optional: keep secrets local (anon key is public-safe; service_role must never be committed)
 # config.js
+
+# Guest names + email addresses. This repo is PUBLIC — never commit these.
+# Supabase (allowed_emails) is the source of truth; keep this file local only.
+supabase/guests.sql

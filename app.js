@@ -43,6 +43,13 @@ function configReady() {
   return Boolean(c.supabaseUrl && c.supabaseAnonKey);
 }
 
+// Content preview for local design work before Supabase exists.
+// Localhost only, so ?preview can never reveal the private shell in production.
+function isLocalPreview() {
+  const local = ["localhost", "127.0.0.1", "[::1]"].includes(location.hostname);
+  return local && new URLSearchParams(location.search).has("preview");
+}
+
 function setStatus(msg, kind = "") {
   els.gateStatus.textContent = msg || "";
   els.gateStatus.dataset.kind = kind;
@@ -209,6 +216,15 @@ async function onPasswordSubmit(e) {
 }
 
 async function init() {
+  if (isLocalPreview()) {
+    els.setupBanner.hidden = true;
+    els.gate.hidden = true;
+    els.app.hidden = false;
+    els.userEmail.textContent = "preview (not signed in)";
+    els.signOut.hidden = true;
+    return;
+  }
+
   if (!configReady()) {
     els.setupBanner.hidden = false;
     els.gate.hidden = true;

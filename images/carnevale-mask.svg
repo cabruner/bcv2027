@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 150" role="img" aria-label="Illustration of a gold Venetian carnival mask with plumes">
+  <defs>
+    <linearGradient id="maskgold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f3d98b"/>
+      <stop offset="1" stop-color="#dfae4f"/>
+    </linearGradient>
+  </defs>
+
+  <!-- plumes -->
+  <g opacity=".95">
+    <path d="M120,58 C 112,30 116,14 128,4 C 130,20 128,40 124,58 Z" fill="#c41e3a"/>
+    <path d="M112,60 C 98,38 92,26 96,8 C 106,20 112,42 118,58 Z" fill="#2a9d8f"/>
+    <path d="M128,60 C 138,40 146,28 158,20 C 152,36 142,52 132,62 Z" fill="#f4a261"/>
+  </g>
+
+  <!-- ribbons -->
+  <g fill="none" stroke-linecap="round" stroke-width="4">
+    <path d="M30,88 C 16,98 12,112 16,128" stroke="#c41e3a"/>
+    <path d="M210,88 C 224,98 228,112 224,128" stroke="#2a9d8f"/>
+  </g>
+
+  <!-- mask -->
+  <path fill="url(#maskgold)" stroke="#8a5a1c" stroke-width="2" fill-rule="evenodd"
+    d="M28,86 C 44,58 78,48 120,52 C 162,48 196,58 212,86 C 200,112 168,124 138,114 C 130,110 126,106 120,106 C 114,106 110,110 102,114 C 72,124 40,112 28,86 Z
+       M62,84 a16,10 0 1,0 32,0 a16,10 0 1,0 -32,0 Z
+       M146,84 a16,10 0 1,0 32,0 a16,10 0 1,0 -32,0 Z"/>
+  <g fill="none" stroke="#8a5a1c" stroke-width="2">
+    <ellipse cx="78" cy="84" rx="16" ry="10"/>
+    <ellipse cx="162" cy="84" rx="16" ry="10"/>
+  </g>
+
+  <!-- brow ornaments -->
+  <g fill="#c41e3a">
+    <circle cx="120" cy="66" r="3"/>
+    <circle cx="98" cy="63" r="2.2"/>
+    <circle cx="142" cy="63" r="2.2"/>
+  </g>
+  <g fill="#2a9d8f">
+    <circle cx="78" cy="62" r="2.2"/>
+    <circle cx="162" cy="62" r="2.2"/>
+  </g>
+</svg>
