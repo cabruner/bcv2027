@@ -103,9 +103,48 @@
             Create password &amp; enter
           </button>
         </form>
+        <p id="signin-help" class="form-footer help-links" hidden>
+          <button type="button" id="forgot-password" class="link-button">Forgot password?</button>
+          <span aria-hidden="true">·</span>
+          <button type="button" id="resend-confirmation" class="link-button">Resend confirmation email</button>
+        </p>
         <p class="form-footer">
           <a href="#" id="back-to-email">Use a different email</a>
         </p>
+      </div>
+
+      <div id="reset-step" hidden>
+        <h2>Choose a new password</h2>
+        <p class="lede">
+          Your reset link is verified. Choose a new password for your invitation.
+        </p>
+        <form id="reset-form" class="stack-form">
+          <label>
+            New password
+            <input
+              id="reset-password"
+              name="reset-password"
+              type="password"
+              autocomplete="new-password"
+              required
+              minlength="8"
+              placeholder="At least 8 characters"
+            />
+          </label>
+          <label>
+            Confirm new password
+            <input
+              id="reset-password-confirm"
+              name="reset-password-confirm"
+              type="password"
+              autocomplete="new-password"
+              required
+              minlength="8"
+              placeholder="Same again"
+            />
+          </label>
+          <button type="submit" id="reset-submit" class="btn primary">Save new password</button>
+        </form>
       </div>
 
       <div id="denied-step" hidden>

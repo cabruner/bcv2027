@@ -258,17 +258,36 @@ body {
 }
 
 .form-footer a,
+.link-button,
 #try-another {
   color: var(--stripe-c);
 }
 
-.form-footer a {
+.form-footer a,
+.link-button {
   font-weight: 600;
   text-decoration: none;
 }
 
-.form-footer a:hover {
+.link-button {
+  appearance: none;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.form-footer a:hover,
+.link-button:hover {
   text-decoration: underline;
+}
+
+.help-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem;
 }
 
 .app {

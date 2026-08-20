@@ -14,7 +14,8 @@ Private guest site for **Bruner Carnivale Venice 2027** — [bcv2027.com](https:
 1. Enter email → humorous “checking the list…”
 2. Not whitelisted → polite denial
 3. Whitelisted → create password (first visit) or sign in
-4. Signed-in home (content coming soon)
+4. Returning guests can reset a forgotten password or resend confirmation
+5. Signed-in home (content coming soon)
 
 ## Guest whitelist
 
@@ -41,20 +42,21 @@ They open the site, enter that email, and create their own password.
 1. Create a project at [supabase.com](https://supabase.com).
 2. **SQL Editor** → New query → paste and run all of [`supabase/schema.sql`](supabase/schema.sql).
 3. **Authentication → Providers → Email**: enable Email.
-4. **Authentication → Providers → Email** (or Auth settings): for a smooth guest experience on a small list, turn **off** “Confirm email” so create-password signs them in immediately. You can turn confirmation on later if you prefer.
-5. **Project Settings → API**: copy **Project URL** and **anon public** key into [`config.js`](config.js):
+4. **Authentication → URL Configuration**: set the Site URL to `https://bcv2027.com` and add `https://bcv2027.com/**` to Redirect URLs so confirmation and password-reset links return to the site.
+5. **Authentication → Providers → Email** (or Auth settings): for a smooth guest experience on a small list, turn **off** “Confirm email” so create-password signs them in immediately. If confirmation stays on, the site supports confirmation resend.
+6. **Project Settings → API**: copy the **Project URL** and **publishable** (or legacy anon public) key into [`config.js`](config.js):
 
 ```js
 window.BCV_CONFIG = {
   supabaseUrl: "https://xxxx.supabase.co",
-  supabaseAnonKey: "eyJhbGciOi...",
+  supabaseAnonKey: "sb_publishable_...",
 };
 ```
 
-Never put the **service_role** key in this repo or in the browser.
+Never put the **service_role** or secret key in this repo or in the browser.
 
-6. Commit/push `config.js` (anon key is public by design) or inject it in deploy — either is fine.
-7. Local preview:
+7. Commit/push `config.js` (the publishable key is public by design) or inject it in deploy — either is fine.
+8. Local preview:
 
 ```bash
 cd ~/Code/bcv2027
@@ -79,7 +81,7 @@ Pushes to `main` publish via GitHub Pages. Custom domain: `bcv2027.com` (`CNAME`
 |------|---------|
 | `index.html` | Gate + private shell |
 | `app.js` | Supabase auth + whitelist check |
-| `config.js` | Supabase URL + anon key |
+| `config.js` | Supabase URL + publishable key |
 | `styles.css` | UI |
 | `supabase/schema.sql` | Whitelist table, RPC, signup trigger |
 | `supabase/guests.sql` | Guest email whitelist — **gitignored, local only** |
