@@ -15,20 +15,20 @@ Private guest site for **Bruner Carnivale Venice 2027** — [bcv2027.com](https:
 2. Not whitelisted → polite denial
 3. Whitelisted → create password (first visit) or sign in
 4. Returning guests can reset a forgotten password or resend confirmation
-5. Signed-in guest home: **Yes / Maybe / No RSVP** first, then weekend details,
-   WhatsApp group, and travel/masks as they firm up
-6. Aileen & Chris (hosts) also see a **guest responses** report they can download as CSV
+5. Signed-in guest home: **RSVP**, download a measurement form and email it to
+   Claudia, then join **WhatsApp** if coming
+6. Aileen, Chris, and Claudia (hosts) also see a **guest responses** report they can download as CSV
 
 ## Guest whitelist
 
 Managed in the Supabase table `allowed_emails`, which is the source of truth.
 
-`supabase/guests.sql` loads the 42 guests we have addresses for (from
+`supabase/guests.sql` loads the guests we have addresses for (from
 `NameEmail.xlsx`) and is safe to re-run. **It is gitignored on purpose** — this
 repo is public, and that file holds real names and email addresses. Keep your
 local copy, or regenerate it from the spreadsheet; never commit it.
 
-Eight more people are on the list but have no email yet; they're listed in a
+A few people are on the list but have no email yet; they're listed in a
 comment at the bottom of that file. Add each one as their address turns up:
 
 ```sql
@@ -111,6 +111,7 @@ Pushes to `main` publish via GitHub Pages. Custom domain: `bcv2027.com` (`CNAME`
 | `supabase/rsvp.sql` | Additive RSVP + host report for the existing project |
 | `supabase/guests.sql` | Guest email whitelist — **gitignored, local only** |
 | `images/` | Venice skyline + Carnevale mask illustrations |
+| `files/` | Guest measurement PDFs (men’s and women’s) |
 
 ## Security notes
 

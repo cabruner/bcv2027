@@ -10,4 +10,6 @@
 # Guest names + email addresses. This repo is PUBLIC — never commit these.
 # Supabase (allowed_emails) is the source of truth; keep these files local only.
 supabase/guests.sql
+supabase/mail-merge.csv
+supabase/bcc-emails.txt
 NameEmail.xlsx

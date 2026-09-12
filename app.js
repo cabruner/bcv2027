@@ -185,6 +185,9 @@ function paintRsvp(status) {
       ? RSVP_LABELS[currentRsvp]
       : "Please reply";
   }
+  if (els.whatsapp) {
+    els.whatsapp.classList.toggle("is-coming", currentRsvp === "yes");
+  }
 }
 
 async function setupWhatsApp() {

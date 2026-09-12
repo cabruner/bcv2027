@@ -402,13 +402,84 @@ a.btn:hover {
   color: var(--stripe-a);
 }
 
+.section-status.available-now {
+  color: var(--ok);
+}
+
 #weekend,
 #travel,
 #attire,
 #rsvp,
+#measurements,
 #whatsapp,
 #host-report {
   scroll-margin-top: 1.25rem;
+}
+
+.to-do h1 {
+  margin: 0 0 1rem;
+}
+
+.todo-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.9rem;
+  counter-reset: todo;
+}
+
+.todo-list li {
+  position: relative;
+  padding-left: 2.4rem;
+}
+
+.todo-list li::before {
+  counter-increment: todo;
+  content: counter(todo);
+  position: absolute;
+  left: 0;
+  top: 0.05rem;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 50%;
+  background: var(--stripe-a);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+
+.todo-list a {
+  color: var(--stripe-c);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.todo-list a:hover {
+  text-decoration: underline;
+}
+
+.rsvp-card h2 {
+  margin: 0;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(2.1rem, 7vw, 3.6rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.download-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.whatsapp-card.is-coming {
+  border-color: rgba(42, 157, 143, 0.45);
+  box-shadow: 0 18px 50px rgba(42, 157, 143, 0.12);
 }
 
 .rsvp-choices {
@@ -742,6 +813,10 @@ code {
   .whatsapp-layout,
   .rsvp-summary {
     grid-template-columns: 1fr;
+  }
+
+  .download-row .btn {
+    width: 100%;
   }
 
   .host-row,

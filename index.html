@@ -172,12 +172,32 @@
     </header>
 
     <main>
+      <section class="card to-do" aria-labelledby="todo-title">
+        <p class="stamp">After you sign in</p>
+        <h1 id="todo-title">Three things, please</h1>
+        <ol class="todo-list">
+          <li>
+            <a href="#rsvp">RSVP</a> — Yes, Maybe, or No. You can change this later.
+          </li>
+          <li>
+            <a href="#measurements">Measurements</a> — Download the men’s or women’s
+            form, visit a tailor, and email the completed form to
+            <a href="mailto:claudia@theweddinglibrary.com">Claudia Hanlin</a>
+            (<a href="mailto:claudia@theweddinglibrary.com">claudia@theweddinglibrary.com</a>).
+          </li>
+          <li>
+            <a href="#whatsapp">WhatsApp</a> — If you’ve confirmed Yes, join the guest
+            group for questions and updates.
+          </li>
+        </ol>
+      </section>
+
       <section id="rsvp" class="card rsvp-card" aria-labelledby="rsvp-title">
-        <p class="stamp">First things first</p>
-        <h1 id="rsvp-title">Will you join us?</h1>
+        <p class="stamp">1 · RSVP</p>
+        <h2 id="rsvp-title">Will you join us?</h2>
         <p class="lede">
           February 5 &amp; 6, 2027 in Venice. Tell us where you stand —
-          you can change this later. The guest WhatsApp group is just below.
+          you can change this later.
         </p>
         <div class="rsvp-choices" role="group" aria-label="RSVP">
           <button type="button" class="rsvp-choice" data-rsvp="yes">
@@ -196,14 +216,33 @@
         <p id="rsvp-feedback" class="rsvp-feedback" hidden></p>
       </section>
 
+      <section id="measurements" class="card measurements-card">
+        <p class="stamp">2 · Measurements</p>
+        <h2>A quick trip to the tailor</h2>
+        <p class="lede">
+          Please complete the men’s or women’s measurement form and send it back to
+          Claudia Hanlin, our planner:
+          <a href="mailto:claudia@theweddinglibrary.com?subject=BCV%202027%20measurements">claudia@theweddinglibrary.com</a>.
+        </p>
+        <p>
+          A local tailor can fill this in quickly. We need it to plan costumes and
+          fittings.
+        </p>
+        <div class="download-row">
+          <a class="btn primary" href="files/men-measurement.pdf">Men’s form (PDF)</a>
+          <a class="btn primary" href="files/women-measurement.pdf">Women’s form (PDF)</a>
+        </div>
+      </section>
+
       <section id="whatsapp" class="card whatsapp-card">
-        <p class="stamp">Stay in touch</p>
+        <p class="stamp">3 · WhatsApp</p>
         <h2>Guest WhatsApp group</h2>
         <div class="whatsapp-layout">
           <div>
             <p class="lede">
-              Weekend updates, questions, and the occasional mask emergency.
-              Open the group, or scan the code from another phone.
+              If you’ve confirmed <strong>Yes</strong>, please join the group for
+              questions and the flow of weekend information.
+              Maybe? You’re welcome too if you want the updates.
             </p>
             <a
               id="whatsapp-link"
@@ -225,16 +264,20 @@
         <h2 id="guest-home-title">Welcome to Venice</h2>
         <p class="lede">
           Everything you need for Aileen &amp; Chris’s Carnevale weekend lives here.
-          Start with your RSVP, join the WhatsApp group, then look over the dates.
+          RSVP, send measurements to Claudia, and join WhatsApp if you’re coming.
         </p>
         <nav class="guest-home-grid" aria-label="Guest information">
           <a class="guest-home-link available" href="#rsvp">
             <span class="guest-home-label">RSVP</span>
             <span id="nav-rsvp-status" class="guest-home-status">Please reply</span>
           </a>
+          <a class="guest-home-link available" href="#measurements">
+            <span class="guest-home-label">Measurements</span>
+            <span class="guest-home-status">Send to Claudia</span>
+          </a>
           <a id="nav-whatsapp" class="guest-home-link available" href="#whatsapp">
             <span class="guest-home-label">WhatsApp</span>
-            <span class="guest-home-status">Guest group</span>
+            <span class="guest-home-status">If you’re coming</span>
           </a>
           <a class="guest-home-link available" href="#weekend">
             <span class="guest-home-label">Weekend at a glance</span>
@@ -244,9 +287,9 @@
             <span class="guest-home-label">Travel &amp; lodging</span>
             <span class="guest-home-status">Coming soon</span>
           </a>
-          <a class="guest-home-link" href="#attire">
+          <a class="guest-home-link available" href="#measurements">
             <span class="guest-home-label">Masks &amp; attire</span>
-            <span class="guest-home-status">Coming soon</span>
+            <span class="guest-home-status">Start with measurements</span>
           </a>
           <a id="nav-host-report" class="guest-home-link available" href="#host-report" hidden>
             <span class="guest-home-label">Guest responses</span>
@@ -343,11 +386,14 @@
         </article>
 
         <article id="attire" class="card planning-card">
-          <p class="section-status">Coming soon</p>
+          <p class="section-status available-now">Available now</p>
           <h2>Masks &amp; attire</h2>
           <p>
-            Expect costume guidance, mask inspiration, and enough notice to prepare
-            something worthy of Carnevale.
+            First step: complete a
+            <a href="#measurements">measurement form</a>
+            with a tailor and email it to
+            <a href="mailto:claudia@theweddinglibrary.com">claudia@theweddinglibrary.com</a>.
+            Costume guidance will follow from there.
           </p>
         </article>
       </section>
@@ -373,7 +419,7 @@
     </footer>
   </div>
 
-  <script src="config.js?v=20260912c"></script>
-  <script type="module" src="app.js?v=20260912c"></script>
+  <script src="config.js?v=20260912d"></script>
+  <script type="module" src="app.js?v=20260912d"></script>
 </body>
 </html>
