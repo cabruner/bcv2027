@@ -82,7 +82,7 @@ Add `?preview` to skip the gate and review layout (`http://127.0.0.1:8765/?previ
 If the site is already live, also run [`supabase/rsvp.sql`](supabase/rsvp.sql) in the
 SQL Editor. That adds:
 
-- `allowed_emails.is_host` — Aileen and Chris are flagged; add another host with
+- `allowed_emails.is_host` — Aileen, Chris, and Claudia are flagged; add another host with
   `update public.allowed_emails set is_host = true where email = 'you@example.com';`
 - `rsvps` — one Yes / No / Maybe per invited email, changeable anytime
 - RPCs: `get_my_rsvp`, `set_my_rsvp`, `i_am_host`, `guest_rsvp_report`

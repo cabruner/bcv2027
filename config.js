@@ -3,5 +3,5 @@
 window.BCV_CONFIG = {
   supabaseUrl: "https://tslryzzlcbtnefupgikh.supabase.co",
   supabaseAnonKey: "sb_publishable_VlvYcAHPYIHKhp7s4iP3PQ_Ku-bYzF7",
-  whatsappGroupUrl: "",
+  whatsappGroupUrl: "https://chat.whatsapp.com/BsufOcZs9x8CLxXP2P3Eq0",
 };

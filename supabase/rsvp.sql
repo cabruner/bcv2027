@@ -4,7 +4,7 @@
 -- existing project (the live site already has schema.sql).
 
 -- ---------------------------------------------------------------------------
--- Host flag on the whitelist (Aileen & Chris). Add more later with:
+-- Host flag on the whitelist (Aileen, Chris, Claudia). Add more later with:
 --   update public.allowed_emails set is_host = true where email = 'you@example.com';
 -- ---------------------------------------------------------------------------
 alter table public.allowed_emails
@@ -14,7 +14,8 @@ update public.allowed_emails
 set is_host = true
 where lower(email) in (
   'aileenpb@gmail.com',
-  'christian.a.bruner@gmail.com'
+  'christian.a.bruner@gmail.com',
+  'claudia@theweddinglibrary.com'
 );
 
 -- ---------------------------------------------------------------------------

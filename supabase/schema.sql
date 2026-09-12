@@ -91,7 +91,8 @@ update public.allowed_emails
 set is_host = true
 where lower(email) in (
   'aileenpb@gmail.com',
-  'christian.a.bruner@gmail.com'
+  'christian.a.bruner@gmail.com',
+  'claudia@theweddinglibrary.com'
 );
 
 create table if not exists public.rsvps (
