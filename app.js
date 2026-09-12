@@ -41,12 +41,34 @@ const els = {
   tryAnother: document.getElementById("try-another"),
   signOut: document.getElementById("sign-out"),
   userEmail: document.getElementById("user-email"),
+  rsvpFeedback: document.getElementById("rsvp-feedback"),
+  rsvpChoices: document.querySelectorAll(".rsvp-choice"),
+  navRsvpStatus: document.getElementById("nav-rsvp-status"),
+  whatsapp: document.getElementById("whatsapp"),
+  whatsappLink: document.getElementById("whatsapp-link"),
+  whatsappQr: document.getElementById("whatsapp-qr"),
+  navWhatsapp: document.getElementById("nav-whatsapp"),
+  hostReport: document.getElementById("host-report"),
+  navHostReport: document.getElementById("nav-host-report"),
+  rsvpSummary: document.getElementById("rsvp-summary"),
+  hostReportList: document.getElementById("host-report-list"),
+  downloadRsvpCsv: document.getElementById("download-rsvp-csv"),
 };
+
+const RSVP_LABELS = {
+  yes: "Yes",
+  maybe: "Maybe",
+  no: "No",
+};
+
+const PREVIEW_RSVP_KEY = "bcv2027-preview-rsvp";
 
 let supabase = null;
 let pendingEmail = "";
 let authMode = "signup";
 let recoveryMode = false;
+let currentRsvp = null;
+let hostReportRows = [];
 
 function configReady() {
   const c = window.BCV_CONFIG || {};
@@ -114,6 +136,264 @@ function showApp(session) {
   els.gate.hidden = true;
   els.app.hidden = false;
   els.userEmail.textContent = session?.user?.email || "";
+  loadPrivateContent();
+}
+
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  }[char]));
+}
+
+function formatWhen(iso) {
+  if (!iso) return "";
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toLocaleString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+function whatsappGroupUrl() {
+  const configured = (window.BCV_CONFIG?.whatsappGroupUrl || "").trim();
+  if (configured) return configured;
+  if (!isLocalPreview()) return "";
+  return (new URLSearchParams(location.search).get("whatsapp") || "").trim();
+}
+
+function setRsvpFeedback(message, isError = false) {
+  els.rsvpFeedback.textContent = message || "";
+  els.rsvpFeedback.hidden = !message;
+  els.rsvpFeedback.classList.toggle("is-error", Boolean(isError));
+}
+
+function paintRsvp(status) {
+  currentRsvp = status || null;
+  els.rsvpChoices.forEach((button) => {
+    const selected = button.dataset.rsvp === currentRsvp;
+    button.classList.toggle("is-selected", selected);
+    button.setAttribute("aria-pressed", String(selected));
+  });
+  if (els.navRsvpStatus) {
+    els.navRsvpStatus.textContent = currentRsvp
+      ? RSVP_LABELS[currentRsvp]
+      : "Please reply";
+  }
+}
+
+async function setupWhatsApp() {
+  const url = whatsappGroupUrl();
+  if (!url) {
+    els.whatsapp.hidden = true;
+    els.navWhatsapp.hidden = true;
+    return;
+  }
+
+  els.whatsapp.hidden = false;
+  els.navWhatsapp.hidden = false;
+  els.whatsappLink.href = url;
+
+  try {
+    const mod = await import("https://esm.sh/qrcode@1.5.4?bundle");
+    const QRCode = mod.default || mod;
+    await QRCode.toCanvas(els.whatsappQr, url, {
+      width: 196,
+      margin: 1,
+      color: { dark: "#1a1210", light: "#fff8f0" },
+    });
+    els.whatsappQr.hidden = false;
+  } catch (error) {
+    console.error(error);
+    els.whatsappQr.hidden = true;
+  }
+}
+
+async function loadRsvp() {
+  if (isLocalPreview() && !supabase) {
+    paintRsvp(localStorage.getItem(PREVIEW_RSVP_KEY));
+    return;
+  }
+  if (!supabase) return;
+
+  const { data, error } = await supabase.rpc("get_my_rsvp");
+  if (error) {
+    console.error(error);
+    setRsvpFeedback("RSVP isn’t available yet — the hosts may still be finishing setup.", true);
+    return;
+  }
+
+  const row = Array.isArray(data) ? data[0] : data;
+  paintRsvp(row?.status);
+  if (row?.status) {
+    const when = formatWhen(row.updated_at);
+    setRsvpFeedback(when ? `Saved ${when}. You can change this anytime.` : "Saved. You can change this anytime.");
+  } else {
+    setRsvpFeedback("");
+  }
+}
+
+async function saveRsvp(status) {
+  if (!RSVP_LABELS[status]) return;
+
+  if (isLocalPreview() && !supabase) {
+    localStorage.setItem(PREVIEW_RSVP_KEY, status);
+    paintRsvp(status);
+    setRsvpFeedback("Saved in preview. Sign-in will store this for real.");
+    return;
+  }
+  if (!supabase) return;
+
+  els.rsvpChoices.forEach((button) => {
+    button.disabled = true;
+  });
+  setRsvpFeedback("Saving…");
+
+  try {
+    const { data, error } = await supabase.rpc("set_my_rsvp", { new_status: status });
+    if (error) {
+      console.error(error);
+      setRsvpFeedback("Couldn’t save just now. Please try again in a moment.", true);
+      return;
+    }
+    const row = Array.isArray(data) ? data[0] : data;
+    paintRsvp(row?.status || status);
+    setRsvpFeedback("Saved. You can change this anytime.");
+  } finally {
+    els.rsvpChoices.forEach((button) => {
+      button.disabled = false;
+    });
+  }
+}
+
+function renderHostSummary(rows) {
+  const counts = { yes: 0, maybe: 0, no: 0, none: 0 };
+  for (const row of rows) {
+    if (row.rsvp && counts[row.rsvp] !== undefined) counts[row.rsvp] += 1;
+    else counts.none += 1;
+  }
+  const items = [
+    ["Yes", counts.yes],
+    ["Maybe", counts.maybe],
+    ["No", counts.no],
+    ["No reply", counts.none],
+  ];
+  els.rsvpSummary.innerHTML = items
+    .map(([label, count]) => `<li><span class="count">${count}</span><span class="label">${label}</span></li>`)
+    .join("");
+}
+
+function renderHostReport(rows) {
+  hostReportRows = rows;
+  renderHostSummary(rows);
+  els.hostReportList.innerHTML = rows
+    .map((row) => {
+      const status = row.rsvp || "none";
+      const badge = RSVP_LABELS[row.rsvp] || "No reply";
+      const when = formatWhen(row.rsvp_updated_at);
+      const account = row.has_account ? "Signed in" : "Hasn’t signed in";
+      const sub = [when ? `Updated ${when}` : null, account].filter(Boolean).join(" · ");
+      return `
+        <article class="host-row">
+          <div>
+            <div class="host-row-name">${escapeHtml(row.name || row.email)}</div>
+            <div class="host-row-email">${escapeHtml(row.email)}</div>
+          </div>
+          <div class="host-row-meta">
+            <span class="rsvp-badge ${escapeHtml(status)}">${escapeHtml(badge)}</span>
+            <span class="host-row-sub">${escapeHtml(sub)}</span>
+          </div>
+        </article>
+      `;
+    })
+    .join("");
+}
+
+function hideHostReport() {
+  hostReportRows = [];
+  els.hostReport.hidden = true;
+  els.navHostReport.hidden = true;
+  els.app.classList.remove("wide");
+}
+
+async function loadHostReport() {
+  if (isLocalPreview() && !supabase) {
+    els.hostReport.hidden = false;
+    els.navHostReport.hidden = false;
+    els.app.classList.add("wide");
+    renderHostReport([
+      { email: "yes@example.com", name: "Guest Yes", rsvp: "yes", rsvp_updated_at: new Date().toISOString(), has_account: true },
+      { email: "maybe@example.com", name: "Guest Maybe", rsvp: "maybe", rsvp_updated_at: new Date().toISOString(), has_account: true },
+      { email: "no@example.com", name: "Guest No", rsvp: "no", rsvp_updated_at: new Date().toISOString(), has_account: false },
+      { email: "waiting@example.com", name: "Guest Waiting", rsvp: null, rsvp_updated_at: null, has_account: false },
+    ]);
+    return;
+  }
+  if (!supabase) {
+    hideHostReport();
+    return;
+  }
+
+  const { data: isHost, error: hostError } = await supabase.rpc("i_am_host");
+  if (hostError || !isHost) {
+    if (hostError) console.error(hostError);
+    hideHostReport();
+    return;
+  }
+
+  const { data, error } = await supabase.rpc("guest_rsvp_report");
+  if (error) {
+    console.error(error);
+    hideHostReport();
+    return;
+  }
+
+  els.hostReport.hidden = false;
+  els.navHostReport.hidden = false;
+  els.app.classList.add("wide");
+  renderHostReport(Array.isArray(data) ? data : []);
+}
+
+function csvCell(value) {
+  const text = value == null ? "" : String(value);
+  if (/[",\n]/.test(text)) return `"${text.replace(/"/g, '""')}"`;
+  return text;
+}
+
+function downloadHostCsv() {
+  const header = ["name", "email", "rsvp", "rsvp_updated_at", "has_account"];
+  const lines = [
+    header.join(","),
+    ...hostReportRows.map((row) =>
+      [
+        csvCell(row.name || ""),
+        csvCell(row.email || ""),
+        csvCell(row.rsvp || "no reply"),
+        csvCell(row.rsvp_updated_at || ""),
+        csvCell(row.has_account ? "yes" : "no"),
+      ].join(",")
+    ),
+  ];
+  const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "bcv2027-rsvps.csv";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+function loadPrivateContent() {
+  setupWhatsApp();
+  loadRsvp();
+  loadHostReport();
 }
 
 function resetGateFields() {
@@ -383,8 +663,12 @@ function attachEventListeners() {
   });
   els.tryAnother.addEventListener("click", backToEmail);
   els.signOut.addEventListener("click", async () => {
-    await supabase.auth.signOut();
+    if (supabase) await supabase.auth.signOut();
   });
+  els.rsvpChoices.forEach((button) => {
+    button.addEventListener("click", () => saveRsvp(button.dataset.rsvp));
+  });
+  els.downloadRsvpCsv.addEventListener("click", downloadHostCsv);
 }
 
 async function init() {
@@ -394,6 +678,8 @@ async function init() {
     els.app.hidden = false;
     els.userEmail.textContent = "preview (not signed in)";
     els.signOut.hidden = true;
+    attachEventListeners();
+    loadPrivateContent();
     return;
   }
 

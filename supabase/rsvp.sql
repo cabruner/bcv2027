@@ -1,89 +1,12 @@
--- Bruner Carnivale Venice 2027 — Supabase schema
--- Run this in the Supabase SQL Editor (Dashboard → SQL → New query).
+-- Bruner Carnivale Venice 2027 — RSVP + host report
+-- Additive. Safe to re-run.
+-- Paste this whole file into the Supabase SQL Editor and run it on the
+-- existing project (the live site already has schema.sql).
 
 -- ---------------------------------------------------------------------------
--- Whitelist (server-side only; never exposed as a table to the client)
+-- Host flag on the whitelist (Aileen & Chris). Add more later with:
+--   update public.allowed_emails set is_host = true where email = 'you@example.com';
 -- ---------------------------------------------------------------------------
-create table if not exists public.allowed_emails (
-  email text primary key,
-  note text,
-  created_at timestamptz not null default now()
-);
-
-alter table public.allowed_emails enable row level security;
-
--- No SELECT/INSERT/UPDATE/DELETE policies for anon/authenticated.
--- Only the service role (dashboard / SQL) can manage rows directly.
--- Clients may only call is_email_allowed() below.
-
--- ---------------------------------------------------------------------------
--- Public RPC: returns true/false for one email (does not leak the full list)
--- ---------------------------------------------------------------------------
-create or replace function public.is_email_allowed(check_email text)
-returns boolean
-language sql
-stable
-security definer
-set search_path = public
-as $$
-  select exists (
-    select 1
-    from public.allowed_emails
-    where lower(email) = lower(trim(check_email))
-  );
-$$;
-
-revoke all on function public.is_email_allowed(text) from public;
-grant execute on function public.is_email_allowed(text) to anon, authenticated;
-
--- ---------------------------------------------------------------------------
--- Hard block: auth signups only for whitelisted emails
--- ---------------------------------------------------------------------------
-create or replace function public.enforce_email_whitelist()
-returns trigger
-language plpgsql
-security definer
-set search_path = public
-as $$
-begin
-  if new.email is null
-     or not exists (
-       select 1
-       from public.allowed_emails
-       where lower(email) = lower(new.email)
-     )
-  then
-    raise exception 'Email is not on the guest list';
-  end if;
-  return new;
-end;
-$$;
-
-drop trigger if exists trg_enforce_email_whitelist on auth.users;
-create trigger trg_enforce_email_whitelist
-  before insert on auth.users
-  for each row
-  execute function public.enforce_email_whitelist();
-
--- ---------------------------------------------------------------------------
--- Initial guest list (add more later with INSERT)
--- ---------------------------------------------------------------------------
-insert into public.allowed_emails (email, note) values
-  ('aileenpb@gmail.com', 'initial'),
-  ('christian.a.bruner@gmail.com', 'initial'),
-  ('claudia@theweddinglibrary.com', 'initial')
-on conflict (email) do nothing;
-
--- ---------------------------------------------------------------------------
--- Add a guest later (example):
---   insert into public.allowed_emails (email, note)
---   values ('friend@example.com', 'wave 2');
--- ---------------------------------------------------------------------------
-
--- RSVP + host report (also in rsvp.sql for existing projects).
--- Paste supabase/rsvp.sql into the SQL Editor if this project was already
--- created from an earlier schema.sql.
-
 alter table public.allowed_emails
   add column if not exists is_host boolean not null default false;
 
@@ -94,6 +17,9 @@ where lower(email) in (
   'christian.a.bruner@gmail.com'
 );
 
+-- ---------------------------------------------------------------------------
+-- One RSVP per invited email. Guests never read this table directly.
+-- ---------------------------------------------------------------------------
 create table if not exists public.rsvps (
   email text primary key references public.allowed_emails (email) on delete cascade,
   status text not null check (status in ('yes', 'no', 'maybe')),
@@ -104,6 +30,9 @@ alter table public.rsvps enable row level security;
 
 revoke all on table public.rsvps from public, anon, authenticated;
 
+-- ---------------------------------------------------------------------------
+-- Guest: read own RSVP
+-- ---------------------------------------------------------------------------
 create or replace function public.get_my_rsvp()
 returns table (status text, updated_at timestamptz)
 language sql
@@ -119,6 +48,9 @@ $$;
 revoke all on function public.get_my_rsvp() from public, anon;
 grant execute on function public.get_my_rsvp() to authenticated;
 
+-- ---------------------------------------------------------------------------
+-- Guest: set or change own RSVP (yes / no / maybe)
+-- ---------------------------------------------------------------------------
 create or replace function public.set_my_rsvp(new_status text)
 returns table (status text, updated_at timestamptz)
 language plpgsql
@@ -159,6 +91,9 @@ $$;
 revoke all on function public.set_my_rsvp(text) from public, anon;
 grant execute on function public.set_my_rsvp(text) to authenticated;
 
+-- ---------------------------------------------------------------------------
+-- Host check (does not leak the guest list)
+-- ---------------------------------------------------------------------------
 create or replace function public.i_am_host()
 returns boolean
 language sql
@@ -177,6 +112,9 @@ $$;
 revoke all on function public.i_am_host() from public, anon;
 grant execute on function public.i_am_host() to authenticated;
 
+-- ---------------------------------------------------------------------------
+-- Host report: every invited email, including people who have not replied.
+-- ---------------------------------------------------------------------------
 create or replace function public.guest_rsvp_report()
 returns table (
   email text,
@@ -226,3 +164,12 @@ $$;
 
 revoke all on function public.guest_rsvp_report() from public, anon;
 grant execute on function public.guest_rsvp_report() to authenticated;
+
+-- Optional dashboard query (SQL Editor, service role — not for the website):
+--   select
+--     coalesce(r.status, 'no reply') as rsvp,
+--     count(*) as guests
+--   from public.allowed_emails a
+--   left join public.rsvps r on r.email = a.email
+--   group by 1
+--   order by 1;

@@ -172,7 +172,90 @@
     </header>
 
     <main>
-      <section class="card hero">
+      <section id="rsvp" class="card rsvp-card" aria-labelledby="rsvp-title">
+        <p class="stamp">First things first</p>
+        <h1 id="rsvp-title">Will you join us?</h1>
+        <p class="lede">
+          February 5 &amp; 6, 2027 in Venice. Tell us where you stand —
+          you can change this later.
+        </p>
+        <div class="rsvp-choices" role="group" aria-label="RSVP">
+          <button type="button" class="rsvp-choice" data-rsvp="yes">
+            <span class="rsvp-choice-label">Yes</span>
+            <span class="rsvp-choice-hint">I’ll be there</span>
+          </button>
+          <button type="button" class="rsvp-choice" data-rsvp="maybe">
+            <span class="rsvp-choice-label">Maybe</span>
+            <span class="rsvp-choice-hint">Hoping to</span>
+          </button>
+          <button type="button" class="rsvp-choice" data-rsvp="no">
+            <span class="rsvp-choice-label">No</span>
+            <span class="rsvp-choice-hint">Can’t make it</span>
+          </button>
+        </div>
+        <p id="rsvp-feedback" class="rsvp-feedback" hidden></p>
+      </section>
+
+      <section id="whatsapp" class="card whatsapp-card" hidden>
+        <p class="stamp">Stay in touch</p>
+        <h2>Guest WhatsApp group</h2>
+        <div class="whatsapp-layout">
+          <div>
+            <p class="lede">
+              Weekend updates, questions, and the occasional mask emergency.
+              Open the group, or scan the code from another phone.
+            </p>
+            <a
+              id="whatsapp-link"
+              class="btn primary"
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+            >Open WhatsApp</a>
+          </div>
+          <figure class="whatsapp-qr">
+            <canvas id="whatsapp-qr" width="196" height="196" aria-label="QR code for the WhatsApp group"></canvas>
+            <figcaption>Scan to join</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="card guest-home" aria-labelledby="guest-home-title">
+        <p class="stamp">Your invitation</p>
+        <h2 id="guest-home-title">Welcome to Venice</h2>
+        <p class="lede">
+          Everything you need for Aileen &amp; Chris’s Carnevale weekend will live here.
+          Start with your RSVP, then look over the dates as plans take shape.
+        </p>
+        <nav class="guest-home-grid" aria-label="Guest information">
+          <a class="guest-home-link available" href="#rsvp">
+            <span class="guest-home-label">RSVP</span>
+            <span id="nav-rsvp-status" class="guest-home-status">Please reply</span>
+          </a>
+          <a id="nav-whatsapp" class="guest-home-link available" href="#whatsapp" hidden>
+            <span class="guest-home-label">WhatsApp</span>
+            <span class="guest-home-status">Guest group</span>
+          </a>
+          <a class="guest-home-link available" href="#weekend">
+            <span class="guest-home-label">Weekend at a glance</span>
+            <span class="guest-home-status">Available now</span>
+          </a>
+          <a class="guest-home-link" href="#travel">
+            <span class="guest-home-label">Travel &amp; lodging</span>
+            <span class="guest-home-status">Coming soon</span>
+          </a>
+          <a class="guest-home-link" href="#attire">
+            <span class="guest-home-label">Masks &amp; attire</span>
+            <span class="guest-home-status">Coming soon</span>
+          </a>
+          <a id="nav-host-report" class="guest-home-link available" href="#host-report" hidden>
+            <span class="guest-home-label">Guest responses</span>
+            <span class="guest-home-status">Hosts only</span>
+          </a>
+        </nav>
+      </section>
+
+      <section id="weekend" class="card hero">
         <figure class="hero-figure">
           <img
             src="images/venice-skyline.svg"
@@ -183,7 +266,7 @@
         </figure>
 
         <p class="stamp">Save the Date</p>
-        <h1>February 5 &amp; 6, 2027</h1>
+        <h2 class="hero-title">February 5 &amp; 6, 2027</h2>
         <p class="lede">
           Venice, Italy — during Carnevale. Aileen &amp; Chris Bruner are marking
           <strong>25 years</strong> of marriage, fashionably late and thoroughly masked.
@@ -250,16 +333,38 @@
         </ul>
       </section>
 
-      <section class="card">
-        <h2>Coming soon</h2>
-        <p>
-          Lodging suggestions, the schedule for both days, travel notes, and costume
-          guidance — because yes, there will be costume guidance. We'll post details
-          here as they firm up.
+      <section class="planning-grid" aria-label="Planning details">
+        <article id="travel" class="card planning-card">
+          <p class="section-status">Coming soon</p>
+          <h2>Travel &amp; lodging</h2>
+          <p>
+            Where to stay, how to arrive, and practical Venice notes will appear here
+            as plans firm up.
+          </p>
+        </article>
+
+        <article id="attire" class="card planning-card">
+          <p class="section-status">Coming soon</p>
+          <h2>Masks &amp; attire</h2>
+          <p>
+            Expect costume guidance, mask inspiration, and enough notice to prepare
+            something worthy of Carnevale.
+          </p>
+        </article>
+      </section>
+
+      <section id="host-report" class="card host-report" hidden>
+        <p class="stamp">Hosts only</p>
+        <h2>Guest responses</h2>
+        <p class="lede">
+          Every invited email, including people who have not signed in yet.
+          Guests can change their RSVP anytime.
         </p>
-        <p class="note">
-          For now: hold the dates, and start thinking about your mask.
+        <ul id="rsvp-summary" class="rsvp-summary" aria-label="RSVP totals"></ul>
+        <p class="host-report-actions">
+          <button type="button" id="download-rsvp-csv" class="btn small">Download CSV</button>
         </p>
+        <div id="host-report-list" class="host-report-list"></div>
       </section>
     </main>
 

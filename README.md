@@ -15,7 +15,9 @@ Private guest site for **Bruner Carnivale Venice 2027** — [bcv2027.com](https:
 2. Not whitelisted → polite denial
 3. Whitelisted → create password (first visit) or sign in
 4. Returning guests can reset a forgotten password or resend confirmation
-5. Signed-in home (content coming soon)
+5. Signed-in guest home: **Yes / Maybe / No RSVP** first, then weekend details,
+   WhatsApp group, and travel/masks as they firm up
+6. Aileen & Chris (hosts) also see a **guest responses** report they can download as CSV
 
 ## Guest whitelist
 
@@ -41,15 +43,18 @@ They open the site, enter that email, and create their own password.
 
 1. Create a project at [supabase.com](https://supabase.com).
 2. **SQL Editor** → New query → paste and run all of [`supabase/schema.sql`](supabase/schema.sql).
-3. **Authentication → Providers → Email**: enable Email.
-4. **Authentication → URL Configuration**: set the Site URL to `https://bcv2027.com` and add `https://bcv2027.com/**` to Redirect URLs so confirmation and password-reset links return to the site.
-5. **Authentication → Providers → Email** (or Auth settings): for a smooth guest experience on a small list, turn **off** “Confirm email” so create-password signs them in immediately. If confirmation stays on, the site supports confirmation resend.
+3. **Authentication → Providers → Email**: Email must be **Enabled**. Leave other providers off.
+4. **Authentication → URL Configuration**: set the Site URL to `https://bcv2027.com` and add these Redirect URLs so confirmation and password-reset links return to the site:
+   - `https://bcv2027.com/**`
+   - `http://127.0.0.1:8765/**` (local preview only)
+5. **Authentication → Providers → Email → Confirm email**: turn this **Off**. Guests can then create a password and enter immediately. If it stays on, they must confirm by email first; the site can resend that message, but sign-in will fail until they do.
 6. **Project Settings → API**: copy the **Project URL** and **publishable** (or legacy anon public) key into [`config.js`](config.js):
 
 ```js
 window.BCV_CONFIG = {
   supabaseUrl: "https://xxxx.supabase.co",
   supabaseAnonKey: "sb_publishable_...",
+  whatsappGroupUrl: "https://chat.whatsapp.com/YOUR_INVITE",
 };
 ```
 
@@ -70,6 +75,25 @@ npx serve -l 8765
 ```
 
 Open http://127.0.0.1:8765 (ES modules need a local server, not `file://`).
+Add `?preview` to skip the gate and review layout (`http://127.0.0.1:8765/?preview`).
+
+## RSVP (existing project)
+
+If the site is already live, also run [`supabase/rsvp.sql`](supabase/rsvp.sql) in the
+SQL Editor. That adds:
+
+- `allowed_emails.is_host` — Aileen and Chris are flagged; add another host with
+  `update public.allowed_emails set is_host = true where email = 'you@example.com';`
+- `rsvps` — one Yes / No / Maybe per invited email, changeable anytime
+- RPCs: `get_my_rsvp`, `set_my_rsvp`, `i_am_host`, `guest_rsvp_report`
+
+Guests never see the full list. Only hosts can load the report (name, email,
+RSVP, whether they have created an account).
+
+## WhatsApp group
+
+Put the invite URL in `config.js` as `whatsappGroupUrl`. The signed-in page then
+shows a link and a QR code. Leave it blank to hide that card.
 
 ## Deploy
 
@@ -83,7 +107,8 @@ Pushes to `main` publish via GitHub Pages. Custom domain: `bcv2027.com` (`CNAME`
 | `app.js` | Supabase auth + whitelist check |
 | `config.js` | Supabase URL + publishable key |
 | `styles.css` | UI |
-| `supabase/schema.sql` | Whitelist table, RPC, signup trigger |
+| `supabase/schema.sql` | Whitelist table, RPC, signup trigger, RSVP |
+| `supabase/rsvp.sql` | Additive RSVP + host report for the existing project |
 | `supabase/guests.sql` | Guest email whitelist — **gitignored, local only** |
 | `images/` | Venice skyline + Carnevale mask illustrations |
 
